@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.Random;
 
@@ -38,12 +39,12 @@ public class AppController {
     }
 
     @GetMapping("/{tiny}/")
-    public ModelAndView getTiny(@PathVariable String tiny) throws JsonProcessingException {
+    public RedirectView getTiny(@PathVariable String tiny) throws JsonProcessingException {
         System.out.println("getRequest for tiny: " + tiny);
         Object tinyRequestStr = redis.get(tiny);
         NewTinyRequest tinyRequest = om.readValue(tinyRequestStr.toString(),NewTinyRequest.class);
         if (tinyRequest.getLongUrl() != null) {
-            return new ModelAndView("redirect:" + tinyRequest.getLongUrl());
+            return new RedirectView(tinyRequest.getLongUrl());
         } else {
             throw new RuntimeException(tiny + " not found");
         }
